@@ -1,0 +1,18 @@
+---
+title: "MPU6050 姿态估计与 UART 通信模块"
+description: "用 C23 实现 Roll/Pitch 卡尔曼滤波、Yaw 角速度积分，以及能够从噪声和坏帧中恢复的 UART 数据帧解析器。"
+techStack: ["C23", "MPU6050", "Kalman Filter", "UART", "CMake", "CTest"]
+projectStatus: host-validated
+validationNote: "已有主机端 CMake 构建与 CTest 测试记录；尚未在真实 STM32、MPU6050、I2C 或 UART 硬件环境中完成集成验证。"
+---
+
+## 实现范围
+
+- Roll/Pitch 分别使用独立卡尔曼滤波器，估计姿态角与陀螺仪偏置。
+- Yaw 使用角速度积分，并保留外部航向修正接口；MPU6050 本身不能提供绝对航向参考。
+- UART 解析器以有限状态机处理 `0xAA 0xBB + command + float32 little-endian + checksum` 数据帧。
+- 解析器能够跳过噪声、拒绝校验失败帧，并继续恢复后续合法帧的解析。
+
+## 当前边界
+
+目前可以确认主机端构建和测试通过记录，但这不等同于真实硬件验证。I2C 时序、传感器量程与标定、串口收发中断、端序以及板级噪声仍需在 STM32 和 MPU6050 硬件上验证。

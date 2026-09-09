@@ -1,0 +1,13 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+const sections = [
+  { number: "01", title: "我是谁", content: "我正在建立一份长期维护的技术成长档案，用真实的练习、工具项目和问题复盘记录自己的学习路径。这里不是一份夸大经验的简历，而是能够持续更新的实践记录。" },
+  { number: "02", title: "目前在学什么", content: "目前重点学习 STM32 与嵌入式开发，通过 Embedded C 练习传感器数据处理和通信协议；同时使用 Python 编写工程工具，并继续学习 LangChain、RAG 等 AI 应用开发方法。" },
+  { number: "03", title: "为什么做技术", content: "我喜欢把模糊问题拆成可验证的步骤，再通过代码、测试和文档逐步缩小不确定性。相比只记录结果，我更关注实现方法、失败原因和验证边界。" },
+  { number: "04", title: "未来方向", content: "下一阶段会继续完成嵌入式项目的硬件集成验证，完善 Python 工具的工程化配置，并用小型实验理解检索、上下文组织和 RAG 评估。所有进展都会以可复现记录为准。" },
+];
+---
+<BaseLayout title="关于我 | 技术成长档案" description="关于我的嵌入式、Python 与 AI 应用学习方向，以及建立技术成长档案的原因。">
+  <header class="max-w-2xl"><p class="font-mono text-xs uppercase tracking-[0.2em] text-zinc-500">About</p><h1 class="mt-4 text-3xl font-semibold tracking-tight text-zinc-950 sm:text-4xl dark:text-zinc-50">关于我</h1><p class="mt-5 text-lg leading-8 text-zinc-600 dark:text-zinc-400">这里记录我如何学习 STM32、Embedded C、Python、LangChain 与 RAG，以及在实践中如何定位问题和校准结论。</p></header>
+  <div class="mt-16 divide-y divide-zinc-200 border-y border-zinc-200 dark:divide-zinc-800 dark:border-zinc-800">{sections.map((section) => <section class="grid gap-4 py-9 md:grid-cols-[8rem_1fr]"><p class="font-mono text-xs text-zinc-500">{section.number}</p><div class="max-w-2xl"><h2 class="text-lg font-semibold text-zinc-950 dark:text-zinc-50">{section.title}</h2><p class="mt-3 leading-7 text-zinc-600 dark:text-zinc-400">{section.content}</p></div></section>)}</div>
+</BaseLayout>

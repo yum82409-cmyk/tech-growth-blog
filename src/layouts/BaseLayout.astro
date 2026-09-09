@@ -1,0 +1,119 @@
+---
+import "../styles/global.css";
+
+interface Props {
+  title?: string;
+  description?: string;
+  canonical?: string;
+  ogType?: "website" | "article";
+  pubDate?: Date;
+}
+
+const {
+  title = "技术成长档案",
+  description = "记录嵌入式、Python 与 AI 应用方向的学习实践、问题排查和阶段性复盘。",
+  canonical,
+  ogType = "website",
+  pubDate,
+} = Astro.props;
+
+const canonicalUrl = canonical ?? (Astro.site ? new URL(Astro.url.pathname, Astro.site).toString() : undefined);
+const currentPath = Astro.url.pathname.replace(/\/+$/, "") || "/";
+const navigation = [
+  { label: "首页", href: "/" },
+  { label: "学习记录", href: "/blog" },
+  { label: "项目", href: "/projects" },
+  { label: "关于我", href: "/about" },
+];
+const isActive = (href: string) => href === "/" ? currentPath === "/" : currentPath === href || currentPath.startsWith(`${href}/`);
+const currentYear = new Date().getFullYear();
+---
+
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content={Astro.generator} />
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#18181b" />
+    <meta name="color-scheme" content="light dark" />
+    <meta property="og:type" content={ogType} />
+    <meta property="og:locale" content="zh_CN" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    {pubDate && <meta property="article:published_time" content={pubDate.toISOString()} />}
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="alternate" type="application/rss+xml" title="技术成长档案 RSS" href="/rss.xml" />
+    {canonicalUrl && <><link rel="canonical" href={canonicalUrl} /><meta property="og:url" content={canonicalUrl} /></>}
+    <title>{title}</title>
+    <style is:inline>html{background:#fafafa}html.dark{background:#18181b}</style>
+    <script is:inline>
+      (() => {
+        const root = document.documentElement;
+        let dark = false;
+        try {
+          const saved = localStorage.getItem("theme");
+          dark = saved === "dark" || (saved !== "light" && matchMedia("(prefers-color-scheme: dark)").matches);
+        } catch {
+          dark = matchMedia("(prefers-color-scheme: dark)").matches;
+        }
+        root.classList.toggle("dark", dark);
+        root.style.colorScheme = dark ? "dark" : "light";
+      })();
+    </script>
+  </head>
+  <body class="bg-zinc-50 font-sans text-zinc-800 antialiased dark:bg-zinc-900 dark:text-zinc-200">
+    <a href="#main-content" class="sr-only fixed left-4 top-4 z-50 rounded-md bg-zinc-950 px-4 py-2 text-sm font-medium text-white focus:not-sr-only dark:bg-zinc-50 dark:text-zinc-950">跳到主要内容</a>
+    <div class="flex min-h-screen flex-col">
+      <header class="border-b border-zinc-200/80 bg-zinc-50/90 backdrop-blur dark:border-zinc-800 dark:bg-zinc-900/90">
+        <div class="mx-auto flex min-h-16 max-w-5xl flex-wrap items-center justify-between gap-x-4 gap-y-2 px-5 py-3 sm:flex-nowrap sm:px-8">
+          <a href="/" class="font-mono text-sm font-semibold tracking-tight text-zinc-950 dark:text-zinc-50" aria-label="返回首页">~/growth-log</a>
+          <button id="theme-toggle" type="button" class="order-2 inline-flex size-9 items-center justify-center rounded-md border border-zinc-300 text-sm text-zinc-700 transition-colors hover:bg-zinc-200 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800 sm:order-3" aria-label="切换深色模式" title="切换深色模式">
+            <span class="dark:hidden" aria-hidden="true">☾</span><span class="hidden dark:inline" aria-hidden="true">☀</span>
+          </button>
+          <nav aria-label="主要导航" class="order-3 flex w-full items-center justify-between gap-1 overflow-x-auto sm:order-2 sm:ml-auto sm:w-auto sm:justify-start">
+            {navigation.map((item) => (
+              <a href={item.href} aria-current={isActive(item.href) ? "page" : undefined} class:list={[
+                "whitespace-nowrap rounded-md px-2.5 py-1.5 text-sm transition-colors",
+                isActive(item.href)
+                  ? "bg-zinc-200 font-medium text-zinc-950 dark:bg-zinc-800 dark:text-zinc-50"
+                  : "text-zinc-600 hover:bg-zinc-200/70 hover:text-zinc-950 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-100",
+              ]}>{item.label}</a>
+            ))}
+          </nav>
+        </div>
+      </header>
+      <main id="main-content" class="mx-auto w-full max-w-5xl flex-1 px-5 py-14 sm:px-8 sm:py-20"><slot /></main>
+      <footer class="border-t border-zinc-200 dark:border-zinc-800">
+        <div class="mx-auto flex max-w-5xl flex-col gap-2 px-5 py-8 text-sm text-zinc-500 sm:flex-row sm:items-center sm:justify-between sm:px-8">
+          <p>© {currentYear} 技术成长档案</p><p class="font-mono text-xs">Built with Astro + Tailwind CSS</p>
+        </div>
+      </footer>
+    </div>
+    <script is:inline>
+      (() => {
+        const button = document.querySelector("#theme-toggle");
+        if (!(button instanceof HTMLButtonElement)) return;
+        const root = document.documentElement;
+        const update = () => {
+          const label = root.classList.contains("dark") ? "切换到浅色模式" : "切换到深色模式";
+          button.setAttribute("aria-label", label);
+          button.setAttribute("title", label);
+        };
+        update();
+        button.addEventListener("click", () => {
+          const dark = !root.classList.contains("dark");
+          root.classList.toggle("dark", dark);
+          root.style.colorScheme = dark ? "dark" : "light";
+          document.querySelector('meta[name="theme-color"]')?.setAttribute("content", dark ? "#18181b" : "#fafafa");
+          try { localStorage.setItem("theme", dark ? "dark" : "light"); } catch {}
+          update();
+        });
+      })();
+    </script>
+  </body>
+</html>

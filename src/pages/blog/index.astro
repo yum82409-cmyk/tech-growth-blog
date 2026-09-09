@@ -1,0 +1,13 @@
+---
+import { getCollection } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { statusIcons, statusLabels } from "../../lib/status";
+const posts = (await getCollection("blog", ({ data }) => !data.archived)).sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime());
+const formatDate = (date: Date) => new Intl.DateTimeFormat("zh-CN", { year: "numeric", month: "2-digit", day: "2-digit" }).format(date);
+---
+<BaseLayout title="学习记录 | 技术成长档案" description="技术学习笔记、问题排查记录和阶段性总结。">
+  <header class="max-w-2xl"><p class="font-mono text-xs uppercase tracking-[0.2em] text-zinc-500">Learning log</p><h1 class="mt-4 text-3xl font-semibold tracking-tight text-zinc-950 sm:text-4xl dark:text-zinc-50">学习记录</h1><p class="mt-5 text-lg leading-8 text-zinc-600 dark:text-zinc-400">记录正在学习的知识、遇到的问题，以及对技术概念的阶段性理解。</p></header>
+  <div class="mt-14 divide-y divide-zinc-200 border-y border-zinc-200 dark:divide-zinc-800 dark:border-zinc-800">
+    {posts.map((post) => <article><a href={`/blog/${post.id}/`} class="group grid gap-4 py-7 md:grid-cols-[8rem_1fr]"><time datetime={post.data.pubDate.toISOString()} class="pt-1 font-mono text-xs text-zinc-500">{formatDate(post.data.pubDate)}</time><div><div class="flex items-center gap-2"><span title={statusLabels[post.data.status]} aria-label={statusLabels[post.data.status]}>{statusIcons[post.data.status]}</span><h2 class="text-lg font-semibold text-zinc-950 group-hover:text-zinc-500 dark:text-zinc-50 dark:group-hover:text-zinc-400">{post.data.title}</h2></div><p class="mt-3 leading-7 text-zinc-600 dark:text-zinc-400">{post.data.description}</p><ul class="mt-4 flex flex-wrap gap-2">{post.data.tags.map((tag) => <li class="font-mono text-xs text-zinc-500">#{tag}</li>)}</ul></div></a></article>)}
+  </div>
+</BaseLayout>

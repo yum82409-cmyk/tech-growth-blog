@@ -1,0 +1,11 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+---
+<BaseLayout title="页面未找到 | 技术成长档案" description="请求的页面不存在或已经移动。">
+  <section class="mx-auto max-w-2xl py-12 text-center sm:py-20">
+    <p class="font-mono text-sm text-zinc-500">ERROR / 404</p>
+    <h1 class="mt-5 text-4xl font-semibold tracking-tight text-zinc-950 sm:text-6xl dark:text-zinc-50">页面未找到</h1>
+    <p class="mx-auto mt-6 max-w-lg leading-7 text-zinc-600 dark:text-zinc-400">这个地址可能已失效，或者内容尚未发布。你可以返回首页，或继续查看学习记录。</p>
+    <div class="mt-9 flex flex-wrap justify-center gap-3"><a href="/" class="rounded-md bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-700 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-white">返回首页</a><a href="/blog" class="rounded-md border border-zinc-300 px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-100 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800">浏览学习记录</a></div>
+  </section>
+</BaseLayout>

@@ -1,0 +1,16 @@
+node_modules/
+dist/
+.astro/
+.env
+.env.*
+!.env.example
+*.log
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.tmp
+artifacts/
+test-results/
+.lighthouse-tmp/
+lighthouse-*.json

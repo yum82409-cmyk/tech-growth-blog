@@ -1,0 +1,25 @@
+---
+import { getCollection, render, type CollectionEntry } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { statusIcons, statusLabels } from "../../lib/status";
+interface Props { post: CollectionEntry<"blog">; }
+export async function getStaticPaths() {
+  const posts = await getCollection("blog", ({ data }) => !data.archived);
+  return posts.map((post) => ({ params: { slug: post.id }, props: { post } }));
+}
+const { post } = Astro.props;
+const { Content } = await render(post);
+const formatDate = (date: Date) => new Intl.DateTimeFormat("zh-CN", { year: "numeric", month: "long", day: "numeric" }).format(date);
+---
+<BaseLayout title={`${post.data.title} | 技术成长档案`} description={post.data.description} ogType="article" pubDate={post.data.pubDate}>
+  <article class="mx-auto max-w-3xl">
+    <a href="/blog" class="font-mono text-xs text-zinc-500 hover:text-zinc-950 dark:hover:text-zinc-100">← 返回学习记录</a>
+    <header class="mt-10 border-b border-zinc-200 pb-10 dark:border-zinc-800">
+      <div class="flex flex-wrap items-center gap-3 text-sm text-zinc-500"><span title={statusLabels[post.data.status]} aria-label={statusLabels[post.data.status]}>{statusIcons[post.data.status]}</span><span>{statusLabels[post.data.status]}</span><span aria-hidden="true">·</span><time datetime={post.data.pubDate.toISOString()}>{formatDate(post.data.pubDate)}</time></div>
+      <h1 class="mt-5 text-3xl font-semibold leading-tight tracking-tight text-zinc-950 sm:text-5xl dark:text-zinc-50">{post.data.title}</h1>
+      <p class="mt-5 text-lg leading-8 text-zinc-600 dark:text-zinc-400">{post.data.description}</p>
+      <ul class="mt-6 flex flex-wrap gap-2">{post.data.tags.map((tag) => <li class="rounded-full border border-zinc-300 px-3 py-1 font-mono text-xs text-zinc-600 dark:border-zinc-700 dark:text-zinc-400">#{tag}</li>)}</ul>
+    </header>
+    <div class="prose prose-zinc mt-12 max-w-none prose-headings:scroll-mt-24 prose-headings:tracking-tight prose-a:text-zinc-900 prose-a:decoration-zinc-300 prose-a:underline-offset-4 prose-code:font-mono prose-pre:border prose-pre:border-zinc-800 dark:prose-invert dark:prose-a:text-zinc-100 dark:prose-a:decoration-zinc-700"><Content /></div>
+  </article>
+</BaseLayout>

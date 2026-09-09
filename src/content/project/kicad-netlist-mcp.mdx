@@ -1,0 +1,19 @@
+---
+title: "KiCad 网表分析 MCP 工具"
+description: "用 Python 解析 KiCad S-expression 与 XML 网表，检查常见电源保护和去耦连接，并通过 JSON-RPC 与 MCP 暴露分析能力。"
+techStack: ["Python", "Pydantic", "KiCad", "JSON-RPC", "FastMCP", "unittest"]
+projectStatus: in-progress
+validationNote: "核心解析、分析与 JSON-RPC 功能曾通过 12 项测试；可编辑安装曾因 pyproject.toml 包目录配置错误失败，当前博客项目中不包含该工具源码，尚未重新修复和验证。"
+---
+
+## 实现范围
+
+- 解析 KiCad S-expression 和 XML 两种网表格式。
+- 将元件、引脚和网络关系建模为可查询的数据结构。
+- 识别常见 LDO、TVS/ESD 器件与去耦电容。
+- 检查连接关系和电容阈值，并通过 Pydantic 输出结构化结果。
+- 提供 JSON-RPC 与 FastMCP 接口，方便其他工具调用分析能力。
+
+## 当前边界
+
+核心功能曾有 12 项测试通过记录，但打包配置仍有已知问题。由于当前工作区没有该工具源码，本轮不能确认可编辑安装已经修复，也不能声称已完成发布。
