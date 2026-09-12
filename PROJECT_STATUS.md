@@ -1,12 +1,12 @@
 # 技术成长博客项目状态
 
-> 最后更新：2026-09-08
+> 最后更新：2026-09-12
 
 ## 1. 当前结论
 
 个人技术博客的第一版本地工程已经完成，并具备静态部署条件。网站已包含 3 篇真实主题学习记录、2 个项目、深色模式、基础 SEO、RSS、robots.txt、自定义 404，以及在提供正式 `SITE_URL` 后生成 sitemap 的配置。
 
-当前**尚未创建 Git 仓库、尚未连接远程、尚未部署到 Cloudflare Pages 或 GitHub Pages**。没有正式域名、公开仓库或演示地址，因此站点中未加入虚假链接。
+当前 Git 仓库已连接并推送至 `https://github.com/yum82409-cmyk/tech-growth-blog`。正式站点 URL 已在 Astro 配置中设为 `https://blog.liuguangzhong.top`，同时允许通过 `SITE_URL` 覆盖。2026-09-12 线上核对时，该域名仍返回 Vercel 的 Astro 示例站，尚未切换到本仓库的 Cloudflare Pages 构建。
 
 ## 2. 项目信息
 
@@ -14,7 +14,7 @@
 - 输出模式：Astro 静态站点（`output: "static"`）
 - 包管理器：pnpm 11.19.0
 - Node.js 约束：`>=22.12 <25`
-- Git 状态：当前目录不是 Git 仓库，无分支、提交记录和远程地址
+- Git 状态：`main` 已连接并推送至 `origin`（GitHub）
 
 ## 3. 已完成功能
 
@@ -105,7 +105,7 @@ pnpm build
 
 ## 8. 未完成事项
 
-- 创建 Git 仓库、提交、推送和远程部署
+- 确认 Cloudflare Pages 成功构建最新 `main`，并将自定义域名从旧 Vercel 项目切换到该 Pages 项目
 - 使用真实 `SITE_URL` 进行一次部署配置构建并确认 sitemap
 - 线上域名、canonical、RSS 和 robots 最终检查
 - 真实桌面端/移动端设备回归测试
@@ -115,11 +115,9 @@ pnpm build
 
 ## 9. 下一步建议
 
-1. 提供显示名称、仓库地址和正式站点地址。
-2. 在提交前复核公开文章和项目验证边界。
-3. 初始化 Git 并推送到用户确认的远程仓库。
-4. 在 Cloudflare Pages 按 README 配置部署。
-5. 部署后执行移动端、桌面端和 Lighthouse 线上验收。
+1. 在 Cloudflare Pages 确认最新 `main` 构建成功。
+2. 将 `blog.liuguangzhong.top` 的 DNS/自定义域名绑定从旧 Vercel 站点切换到该 Pages 项目。
+3. 部署后检查 canonical、RSS、robots、sitemap、移动端及 Lighthouse。
 
 ## 10. 最终验证
 
@@ -127,10 +125,12 @@ pnpm build
 - `pnpm build`：成功；Astro check 为 0 errors / 0 warnings / 0 hints；生成日志报告 8 page(s)，另包含 2 个静态 API 端点，共检查到首页、关于、博客列表、3 篇详情、项目页、404、RSS、robots。
 - 无 `SITE_URL`：构建成功，不生成 sitemap，符合预期。
 - 临时使用保留测试域名执行配置验证：`sitemap-index.xml` 与 `sitemap-0.xml` 成功生成；该地址未写入项目配置或产物。
-- `pnpm preview`：已在 `http://127.0.0.1:4321` 启动新版构建。
+- `pnpm preview`：2026-09-08 曾在 `http://127.0.0.1:4321` 启动新版构建；2026-09-12 Playwright 自动启动因 Astro 7 与 `--ignore-lock` 参数冲突而未执行，该问题不影响生产构建。
 - HTTP 检查：首页、关于、博客列表、3 篇文章、项目、RSS、robots、favicon 均返回 200；不存在路由返回 404 并显示自定义页面。
 - 浏览器结构检查：首页、关于、博客列表、项目、文章详情和 404 均加载新版内容；旧重复 slug 未出现在列表或静态路由中；MDX 标题、列表和代码块正常呈现。
 - 主题检查：切换按钮标签随主题更新，刷新后偏好保持。
 - 当前应用内浏览器视口约 639×513，页面 `scrollWidth` 未超过可视内容宽度；专门的 375px 移动端视口未执行，因此不能视为完整移动端验收。
 - 预览日志未发现运行错误；RSS 通过 HTTP 和静态内容检查，包含 3 篇文章。
 - Lighthouse：未执行，当前环境未提供现成 Lighthouse 验证流程。
+- 2026-09-12：`pnpm install --frozen-lockfile` 与 `pnpm build` 成功，0 errors / 0 warnings / 0 hints；生成正式域名 canonical、RSS、robots 和 sitemap。
+- 2026-09-12 线上检查：`blog.liuguangzhong.top` HTTPS 可用，但响应头为 `Server: Vercel`，页面仍是 `Astro Blog` 示例站并引用 `https://example.com`；当前域名尚未指向本仓库的 Cloudflare Pages 部署。

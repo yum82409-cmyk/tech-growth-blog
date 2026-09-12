@@ -87,11 +87,11 @@ validationNote: "准确描述已验证与未验证的边界。"
 - Build command：`pnpm build`
 - Build output directory：`dist`
 - Root directory：仓库根目录
-- 环境变量：`SITE_URL`（正式 Pages 地址或自定义域名）
+- 环境变量：`SITE_URL`（可选；默认正式域名为 `https://blog.liuguangzhong.top`，预览部署可用此变量覆盖）
 - Node.js：使用符合 `package.json` engines 的 22.x 版本
 - 包管理器：pnpm（锁文件和 `packageManager` 已提交准备）
 
-项目目前未创建 Git 仓库、未连接远程、未部署。创建仓库后可按实际地址执行：
+项目已连接 GitHub 仓库 `https://github.com/yum82409-cmyk/tech-growth-blog`。Cloudflare Pages 应从 `main` 分支自动构建；正式域名配置为 `https://blog.liuguangzhong.top`。首次配置其他远程时可参考：
 
 ```powershell
 git init
