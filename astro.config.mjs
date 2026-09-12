@@ -3,11 +3,11 @@ import mdx from "@astrojs/mdx";
 import sitemap from "@astrojs/sitemap";
 import tailwindcss from "@tailwindcss/vite";
 
-const site = process.env.SITE_URL;
+const site = "https://blog.liuguangzhong.top";
 
 export default defineConfig({
   output: "static",
-  ...(site ? { site } : {}),
-  integrations: [mdx(), ...(site ? [sitemap()] : [])],
+  site,
+  integrations: [mdx(), sitemap()],
   vite: { plugins: [tailwindcss()] },
 });
