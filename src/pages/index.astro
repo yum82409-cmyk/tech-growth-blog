@@ -6,8 +6,8 @@ import { statusIcons, statusLabels } from "../lib/status";
 
 const formatDate = (date: Date) => new Intl.DateTimeFormat("zh-CN", { year: "numeric", month: "2-digit", day: "2-digit" }).format(date);
 const latestNotes = (await getCollection("blog", ({ data }) => !data.archived)).sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime()).slice(0, 3);
-const selectedProjects = (await getCollection("project", ({ data }) => !data.archived)).slice(0, 2);
-const currentlyLearning = ["STM32", "Embedded C", "Python", "LangChain", "RAG"];
+const selectedProjects = (await getCollection("project", ({ data }) => !data.archived)).sort((a, b) => Number(b.data.projectStatus === "validated") - Number(a.data.projectStatus === "validated")).slice(0, 2);
+const currentlyLearning = ["STM32", "Embedded C", "Python", "LangChain", "RAG", "Proteus", "FastAPI"];
 ---
 
 <BaseLayout title="首页 | 技术成长档案" description="记录嵌入式、Python 与 AI 应用方向的学习实践、问题排查和阶段性复盘。">

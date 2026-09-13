@@ -1,0 +1,24 @@
+---
+title: "STM32F103C8T6 串口命令控制台工程"
+description: "USART1 逐字节中断写入 256 字节环形缓冲区，主循环解析 help/led/adc/status 命令；CubeIDE 零警告编译，Proteus 完成电路级仿真。"
+techStack: ["STM32F103C8T6", "STM32CubeIDE", "HAL", "USART", "ADC", "TIM2", "Proteus"]
+projectStatus: host-validated
+validationNote: "CubeIDE 2.1.1 Clean + Build 通过：0 errors / 0 warnings，Flash 19,496 B、RAM 2,520 B；本机未检测到 ST-Link 与 USB-TTL，串口命令、LED、ADC 与 uptime 的上板行为尚未验证。"
+---
+
+## 实现范围
+
+- 目标芯片 STM32F103C8T6，HSE 8MHz，SYSCLK 72MHz。
+- USART1（PA9/PA10，115200-8-N-1）逐字节中断接收，仅写入 256 字节环形缓冲区。
+- 主循环完成行解析与命令分发：`help`、`led on/off/toggle`、`adc`、`status`，命令最长 63 字符。
+- TIM2（PSC=71、ARR=999）提供 1ms 节拍，`status` 输出运行毫秒数。
+- ADC1 在 PA0 上做 12 位采集，输出整数毫伏。
+- 架构约束：中断里不做命令解析、不读 ADC、不做长时间串口发送。
+
+## 仿真验证
+
+同一学习线的前置工程（PA0 按键 + PC13 低电平 LED，含复位上拉、BOOT0 下拉、SWD 与去耦参考连接）已在 Proteus 8 中完成电路级仿真：加载编译出的 ELF 后，按键行为与代码预期一致。
+
+## 当前边界
+
+编译与仿真是目前全部已验证内容。没有真实开发板、ST-Link 和 USB-TTL 的环境下，串口命令逐条行为、LED 驱动、ADC 档位与 uptime 增长均未上板验证；仿真结果不能当作板级测试证据。

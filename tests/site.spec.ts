@@ -8,6 +8,10 @@ const pages = [
   { path: "/projects/", heading: "项目" },
   { path: "/projects/mpu6050-attitude-uart/", heading: "MPU6050 姿态估计与 UART 通信模块" },
   { path: "/projects/kicad-netlist-mcp/", heading: "KiCad 网表分析 MCP 工具" },
+  { path: "/projects/stm32f103-console/", heading: "STM32F103C8T6 串口命令控制台工程" },
+  { path: "/projects/tech-growth-blog-site/", heading: "技术成长博客（本站）" },
+  { path: "/blog/ai-gateway-mvp-notes/", heading: "自建 AI 聚合站之前的 MVP 设计笔记" },
+  { path: "/blog/stm32f103-proteus-simulation/", heading: "用 CubeMX 与 Proteus 完成 STM32F103C8T6 的第一次仿真" },
   { path: "/blog/mpu6050-roll-pitch/", heading: "从 MPU6050 原始数据到 Roll/Pitch 姿态角" },
   { path: "/blog/recoverable-uart-parser/", heading: "设计能够从噪声中恢复的 UART 数据帧解析器" },
   { path: "/blog/kicad-netlist-power-check/", heading: "使用 Python 解析 KiCad 网表并检查电源电路" },
@@ -17,7 +21,12 @@ for (const entry of pages) {
   test(`${entry.path} renders, stays inside viewport, and has no serious accessibility violations`, async ({ page }) => {
     const errors: string[] = [];
     page.on("console", (message) => {
-      if (message.type() === "error") errors.push(`console: ${message.text()}`);
+      if (message.type() !== "error") return;
+      const url = message.location()?.url ?? "";
+      // Cloudflare 自动注入的 Web Analytics 脚本（beacon.min.js）能否加载取决于客户端网络，
+      // 与站点源码无关，不能作为页面回归的失败条件。
+      if (url.includes("cloudflareinsights.com") || message.text().includes("cloudflareinsights.com/beacon.min.js")) return;
+      errors.push(`console: ${message.text()}`);
     });
     page.on("pageerror", (error) => errors.push(`pageerror: ${error.message}`));
 
@@ -46,6 +55,8 @@ test("blog list is reverse chronological and only exposes canonical slugs", asyn
   await page.goto("/blog/");
   const links = await page.locator('main article a[href^="/blog/"]').evaluateAll((items) => items.map((item) => item.getAttribute("href")));
   expect(links).toEqual([
+    "/blog/ai-gateway-mvp-notes/",
+    "/blog/stm32f103-proteus-simulation/",
     "/blog/mpu6050-roll-pitch/",
     "/blog/recoverable-uart-parser/",
     "/blog/kicad-netlist-power-check/",
@@ -79,8 +90,9 @@ test("rss, robots, and favicon are valid endpoints", async ({ request }) => {
   expect(rss.status()).toBe(200);
   expect(rss.headers()["content-type"]).toContain("xml");
   const xml = await rss.text();
-  expect((xml.match(/<item>/g) ?? []).length).toBe(3);
+  expect((xml.match(/<item>/g) ?? []).length).toBe(5);
   expect(xml).toContain("/blog/mpu6050-roll-pitch/");
+  expect(xml).toContain("/blog/ai-gateway-mvp-notes/");
 
   const robots = await request.get("/robots.txt");
   expect(robots.status()).toBe(200);

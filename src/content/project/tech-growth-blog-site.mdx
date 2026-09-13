@@ -1,0 +1,25 @@
+---
+title: "技术成长博客（本站）"
+description: "用 Astro 构建的静态博客与成长档案，内容集合管理文章与项目，部署在 Cloudflare Workers 静态资源上，并通过 Playwright 与 Lighthouse 完成生产验收。"
+techStack: ["Astro", "Tailwind CSS", "TypeScript", "MDX", "Playwright", "Cloudflare Workers"]
+projectStatus: validated
+validationNote: "2026-09-13 完成生产验收：HTTPS、页面 200/404、RSS、sitemap、robots 均通过，Lighthouse 首页与文章页 99/100/96/100。部分网络下 Cloudflare 注入的统计脚本被拦截，只影响第三方访问统计，不影响站点功能。"
+githubUrl: https://github.com/yum82409-cmyk/tech-growth-blog
+demoUrl: https://blog.liuguangzhong.top
+---
+
+## 实现范围
+
+- Astro Content Collections 管理 `blog` 与 `project` 两个集合，支持 MDX、成长状态与归档字段。
+- 浅色/深色主题切换，`localStorage` 持久化，渲染前应用主题避免闪烁。
+- SEO 基础：正式域名 canonical、Open Graph、RSS、robots.txt、sitemap、favicon。
+- 自定义 404 页面，不存在的路由返回真实 HTTP 404。
+- Playwright + axe 自动化测试：13 个页面的渲染、横向溢出、可访问性、主题持久化、链接可达性检查。
+
+## 部署形态
+
+静态构建产物通过 Cloudflare Workers 静态资源托管：`pnpm run build` 生成 `dist/`，`npx wrangler deploy` 发布，自定义域名 `blog.liuguangzhong.top` 已绑定并启用 HTTPS，仓库 `main` 分支保持与线上一致。
+
+## 当前边界
+
+`*.pages.dev` 类默认地址未经确认，站点唯一经过验收的入口是正式域名；Cloudflare 自动注入的 Web Analytics 脚本在部分受限网络下无法加载，会影响该客户端的访问统计，但不影响站点本身的任何功能。
