@@ -71,8 +71,8 @@ const currentYear = new Date().getFullYear();
     <div class="flex min-h-screen flex-col">
       <header class="border-b border-zinc-200/80 bg-zinc-50/90 backdrop-blur dark:border-zinc-800 dark:bg-zinc-900/90">
         <div class="mx-auto flex min-h-16 max-w-5xl flex-wrap items-center justify-between gap-x-4 gap-y-2 px-5 py-3 sm:flex-nowrap sm:px-8">
-          <a href="/" class="font-mono text-sm font-semibold tracking-tight text-zinc-950 dark:text-zinc-50" aria-label="返回首页">~/growth-log</a>
-          <button id="theme-toggle" type="button" class="order-2 inline-flex size-9 items-center justify-center rounded-md border border-zinc-300 text-sm text-zinc-700 transition-colors hover:bg-zinc-200 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800 sm:order-3" aria-label="切换深色模式" title="切换深色模式">
+          <a href="/" class="font-mono text-sm font-semibold tracking-tight text-zinc-950 transition-colors hover:text-zinc-600 dark:text-zinc-50 dark:hover:text-zinc-300" aria-label="返回首页"><span class="text-cyan-700 dark:text-cyan-400">~</span>/growth-log</a>
+          <button id="theme-toggle" type="button" class="order-2 inline-flex size-9 items-center justify-center rounded-md border border-zinc-300 text-sm text-zinc-700 transition-colors hover:border-cyan-500/60 hover:text-cyan-700 dark:border-zinc-700 dark:text-zinc-300 dark:hover:border-cyan-400/50 dark:hover:text-cyan-300 sm:order-3" aria-label="切换深色模式" title="切换深色模式">
             <span class="dark:hidden" aria-hidden="true">☾</span><span class="hidden dark:inline" aria-hidden="true">☀</span>
           </button>
           <nav aria-label="主要导航" class="order-3 flex w-full items-center justify-between gap-1 overflow-x-auto sm:order-2 sm:ml-auto sm:w-auto sm:justify-start">
@@ -80,7 +80,7 @@ const currentYear = new Date().getFullYear();
               <a href={item.href} aria-current={isActive(item.href) ? "page" : undefined} class:list={[
                 "whitespace-nowrap rounded-md px-2.5 py-1.5 text-sm transition-colors",
                 isActive(item.href)
-                  ? "bg-zinc-200 font-medium text-zinc-950 dark:bg-zinc-800 dark:text-zinc-50"
+                  ? "bg-cyan-500/10 font-medium text-cyan-700 dark:bg-cyan-400/10 dark:text-cyan-300"
                   : "text-zinc-600 hover:bg-zinc-200/70 hover:text-zinc-950 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-100",
               ]}>{item.label}</a>
             ))}
@@ -90,7 +90,8 @@ const currentYear = new Date().getFullYear();
       <main id="main-content" class="mx-auto w-full max-w-5xl flex-1 px-5 py-14 sm:px-8 sm:py-20"><slot /></main>
       <footer class="border-t border-zinc-200 dark:border-zinc-800">
         <div class="mx-auto flex max-w-5xl flex-col gap-2 px-5 py-8 text-sm text-zinc-500 sm:flex-row sm:items-center sm:justify-between sm:px-8">
-          <p>© {currentYear} 技术成长档案</p><p class="font-mono text-xs">Built with Astro + Tailwind CSS</p>
+          <p><span class="font-mono text-cyan-700 dark:text-cyan-400" aria-hidden="true">➜</span> © {currentYear} 技术成长档案</p>
+          <p class="font-mono text-xs">built with astro + tailwind · deployed on cloudflare · <a href="/rss.xml" class="underline decoration-zinc-300 underline-offset-4 transition-colors hover:text-cyan-700 dark:decoration-zinc-700 dark:hover:text-cyan-300">rss</a></p>
         </div>
       </footer>
     </div>
