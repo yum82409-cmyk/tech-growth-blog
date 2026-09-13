@@ -104,3 +104,9 @@ git remote add origin https://github.com/<account>/<repository>.git
 ## 验证边界
 
 站点中的项目说明会区分主机端测试、硬件验证、正在开发和学习实验。当前 MPU6050 项目不能据此认定已通过真实 STM32/I2C/UART 硬件验证；STM32 命令控制台工程目前只有编译与 Proteus 仿真记录，上板行为未验证；KiCad 工具的包安装配置也仍待在其源码工作区修复和重新验证。
+
+## 项目复盘
+
+完整记录项目从初始化、内容替换、跨电脑权限排查、GitHub 推送、Cloudflare 部署到线上验收的过程：
+
+- [技术成长博客项目复盘](./docs/tech-growth-blog-postmortem.md)
