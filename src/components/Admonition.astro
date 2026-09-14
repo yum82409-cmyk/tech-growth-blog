@@ -1,0 +1,13 @@
+---
+interface Props {
+  type?: "info" | "success" | "warning" | "error";
+  title?: string;
+}
+const { type = "info", title } = Astro.props;
+const labels = { info: "INFO", success: "SUCCESS", warning: "WARNING", error: "ERROR" };
+const prompts = { info: "[i]", success: "[✓]", warning: "[!]", error: "[x]" };
+---
+<div class={`admonition admonition-${type}`}>
+  <p class="admonition-label"><span aria-hidden="true">{prompts[type]}</span> {title ?? labels[type]}</p>
+  <div class="admonition-body"><slot /></div>
+</div>

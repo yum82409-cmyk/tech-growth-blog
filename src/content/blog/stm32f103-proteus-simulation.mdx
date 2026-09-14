@@ -6,6 +6,8 @@ tags: ["STM32", "Proteus", "CubeMX", "Embedded C"]
 status: budding
 ---
 
+import Admonition from "../../components/Admonition.astro";
+
 ## 问题背景
 
 手边暂时没有 ST-Link、USB-TTL 和开发板，但想先验证一条完整的开发链路：引脚配置、代码生成、编译产物、电路仿真。目标是 BluePill 上最常见的 STM32F103C8T6，第一个任务也很简单——PA0 按键控制 PC13 板载 LED。
@@ -19,6 +21,10 @@ status: budding
 - **Proteus 8**：真正的电路级仿真器，芯片和外设电路在这里运行，固件以 ELF/HEX 形式挂载进去。
 
 明确这个分工之后，链路变成：CubeMX 出 `.ioc` 和初始化代码 → CubeIDE/工具链编译出 `.elf` 和 `.hex` → Proteus 建 `.pdsprj` 工程加载 ELF 运行仿真。
+
+<Admonition type="error" title="常见误区">
+  STM32CubeMX / CubeIDE 不是电路仿真器。想"在 CubeMX 里跑一下看看效果"，方向从一开始就是错的——配置工具产出代码，仿真交给 Proteus 这类电路级工具。
+</Admonition>
 
 ## 第一块电路：LED 与按键
 
@@ -50,6 +56,10 @@ status: budding
 ## 当前验证范围
 
 已经验证：CubeMX 配置生成、GNU ARM 工具链编译、Proteus 电路仿真运行。尚未验证：六条串口命令、LED、ADC 档位和 uptime 增长的真实上板行为——这部分全部标记为未验证，也不会用仿真结果冒充板级测试。
+
+<Admonition type="warning" title="验证边界">
+  编译 0 错误与仿真通过，都只能证明工程在主机端成立；在没有 ST-Link 和 USB-TTL 之前，任何板级行为结论都应视为未验证。
+</Admonition>
 
 ## 后续计划
 

@@ -6,9 +6,15 @@ tags: ["Python", "FastAPI", "System Design", "Deployment"]
 status: seedling
 ---
 
+import Admonition from "../../components/Admonition.astro";
+
 ## 问题背景
 
 想做一个自己的 AI 聚合站：网页上能切换不同模型聊天，后端统一收口，以后方便继续加功能。第一版目标定得很具体——能运行、能切换模型、能对话的 MVP，不追求 Vue、PostgreSQL、支付这些后续能力。
+
+<Admonition type="info" title="MVP 范围">
+  能运行、能切换模型、能对话，三件事之外的全部延后：前端框架、PostgreSQL、流式输出、支付与多用户都属于第二阶段。
+</Admonition>
 
 ## 先练手：一键脚本的三个教训
 
@@ -16,6 +22,10 @@ status: seedling
 
 1. **复制脚本不等于理解配置。** 教程里让"把自己的内容写进 app.py"，实际那个 `app.py` 只是安装启动脚本，真正的业务配置在管理后台或环境变量里。分不清"启动脚本"和"应用配置"浪费了大量时间。
 2. **一键脚本存在版本漂移。** 脚本直接拉取项目的 `main` 分支，项目更新后教程可能突然失效。Console 里出现 `requires Python >=3.13`、依赖构建失败这类报错，不是自己"没填对内容"，而是上游变了。
+
+<Admonition type="warning" title="谨慎执行 curl | bash">
+  直接拉 `main` 分支的一键脚本意味着每次执行都在追一个移动目标。部署前先确认脚本锁定的版本，失败时先读第一处报错，而不是盲目重启。
+</Admonition>
 3. **要看第一处报错，不要盲目重启。** 启动半天没日志、或者反复重启时，正确动作是读 Console 最后几十行日志里的第一处报错，而不是反复点重启碰运气。
 
 ## 受限环境的选型约束
@@ -49,6 +59,10 @@ status: seedling
 ```
 
 `BaseProvider` 只约定两个方法：`chat(model, messages, stream)` 和 `list_models()`。大量服务兼容 OpenAI 的 `/v1/chat/completions` 与 `/v1/models` 接口，所以第一版只实现 `openai_compatible` 适配器，配 `API_KEY` + `BASE_URL` 就能接入一家新供应商。以后增加模型只是增加一个适配器文件，不改前端和主流程。
+
+<Admonition type="success" title="设计回报">
+  适配器模式的收益在第一天就能兑现：接入一家 OpenAI 兼容供应商，只需要一个新文件和两条环境变量，主流程零改动。
+</Admonition>
 
 ## 安全边界
 

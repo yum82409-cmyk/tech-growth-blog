@@ -116,5 +116,57 @@ const currentYear = new Date().getFullYear();
         });
       })();
     </script>
+    <script is:inline>
+      (() => {
+        // 彩蛋 1：打开开发者控制台，打印青色渐变 ASCII 字符画
+        const shades = ["#164e63", "#0e7490", "#0891b2", "#06b6d4", "#22d3ee", "#67e8f9"];
+        const art = [
+          "██  ██ ███   ██  ██   ~/growth-log",
+          "██  ██ ████  ██  ██   C · Python · Embedded · AI",
+          "██████ ██ ███ ██ ██   blog.liuguangzhong.top",
+          "██  ██ ██  ████  ██   记录成长 · 保持诚实",
+          "██  ██ ██   ██   ██   ➜ 试试在页面输入 ls 后回车",
+        ];
+        console.log("%c growth-log %c 技术成长档案 ", "background:#0891b2;color:#fff;font-weight:bold;padding:2px 6px;border-radius:3px 0 0 3px", "background:#164e63;color:#a5f3fc;font-weight:bold;padding:2px 6px;border-radius:0 3px 3px 0");
+        art.forEach((line, i) => console.log("%c" + line, `color:${shades[i % shades.length]};font-family:monospace;font-weight:bold;line-height:1.4`));
+
+        // 彩蛋 2：页面空白处输入 ls 回车 → 终端卡片霓虹脉冲 + 目录 toast；clear 回车 → 复原
+        let buf = "";
+        let timer;
+        const toast = (text) => {
+          let el = document.querySelector("#cli-toast");
+          if (!el) {
+            el = document.createElement("div");
+            el.id = "cli-toast";
+            el.setAttribute("role", "status");
+            el.className = "fixed bottom-6 left-1/2 z-50 rounded-lg border border-cyan-500/60 bg-zinc-950/95 px-4 py-2.5 font-mono text-xs text-cyan-300 shadow-lg shadow-cyan-500/10 dark:border-cyan-400/50";
+            el.style.cssText = "opacity:0;transform:translate(-50%,8px);transition:opacity .2s ease,transform .2s ease;pointer-events:none";
+            document.body.appendChild(el);
+          }
+          el.textContent = text;
+          el.style.opacity = "1";
+          el.style.transform = "translate(-50%,0)";
+          clearTimeout(timer);
+          timer = setTimeout(() => { el.style.opacity = "0"; el.style.transform = "translate(-50%,8px)"; }, 2600);
+        };
+        addEventListener("keydown", (e) => {
+          const t = e.target;
+          if (t instanceof HTMLElement && (t.isContentEditable || ["INPUT", "TEXTAREA", "SELECT"].includes(t.tagName))) return;
+          if (e.key === "Enter") {
+            if (buf === "ls") {
+              document.documentElement.classList.add("ls-flash");
+              setTimeout(() => document.documentElement.classList.remove("ls-flash"), 1800);
+              toast("➜ about/  blog/  projects/  rss.xml");
+            } else if (buf === "clear") {
+              document.documentElement.classList.remove("ls-flash");
+              toast("➜ cleared");
+            }
+            buf = "";
+            return;
+          }
+          if (e.key.length === 1) buf = (buf + e.key).slice(-5);
+        });
+      })();
+    </script>
   </body>
 </html>

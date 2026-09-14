@@ -4,7 +4,31 @@
 
 @theme {
   --font-sans: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  --font-mono: "JetBrains Mono", "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  --font-mono: "JetBrains Mono", "IBM Plex Mono", "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  /* 终端辅助色：语义 token 映射到随主题切换的 CSS 变量 */
+  --color-term-error: var(--term-error);
+  --color-term-warn: var(--term-warn);
+  --color-term-pass: var(--term-pass);
+  --color-term-info: var(--term-info);
+  --color-term-error-border: var(--term-error-border);
+  --color-term-warn-border: var(--term-warn-border);
+  --color-term-pass-border: var(--term-pass-border);
+  --color-term-info-border: var(--term-info-border);
+}
+
+/* 浅色模式：正文级文字对比 ≥ 7:1（WCAG AAA），边框 ≥ 3:1（UI 组件级） */
+:root {
+  --term-error: #991b1b;        --term-error-border: #dc2626;  --term-error-soft: rgb(220 38 38 / 0.06);
+  --term-warn: #92400e;         --term-warn-border: #d97706;   --term-warn-soft: rgb(217 119 6 / 0.07);
+  --term-pass: #166534;         --term-pass-border: #16a34a;   --term-pass-soft: rgb(22 163 74 / 0.06);
+  --term-info: #155e75;         --term-info-border: #0891b2;   --term-info-soft: rgb(8 145 178 / 0.06);
+}
+/* 深色模式：荧光终端质感，文字对比 ≥ 8:1 */
+.dark {
+  --term-error: #fca5a5;        --term-error-border: #f87171;  --term-error-soft: rgb(248 113 113 / 0.08);
+  --term-warn: #fcd34d;         --term-warn-border: #fbbf24;   --term-warn-soft: rgb(251 191 36 / 0.07);
+  --term-pass: #86efac;         --term-pass-border: #4ade80;   --term-pass-soft: rgb(74 222 128 / 0.07);
+  --term-info: #67e8f9;         --term-info-border: #22d3ee;   --term-info-soft: rgb(34 211 238 / 0.07);
 }
 
 @layer base {
@@ -27,7 +51,62 @@
 }
 .cursor-blink { animation: cursor-blink 1.1s steps(1) infinite; }
 
+/* CRT 扫描线：悬停时淡入并闪两帧，随后稳定在低透明度 */
+.crt-hover { position: relative; }
+.crt-hover::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: repeating-linear-gradient(to bottom, transparent 0 2px, rgb(0 0 0 / 0.55) 2px 3px);
+  opacity: 0;
+  transition: opacity 0.15s ease;
+  mix-blend-mode: overlay;
+}
+.crt-hover:hover::after { opacity: 0.05; animation: crt-flicker 0.45s steps(3, jump-none); }
+.dark .crt-hover:hover::after { opacity: 0.09; }
+
+@keyframes crt-flicker {
+  0% { opacity: 0.13; }
+  40% { opacity: 0.02; }
+  80% { opacity: 0.10; }
+  100% { opacity: 0.05; }
+}
+
+/* 文字毛刺：悬停时 0.5px 青红错位，300ms 内收束，不干扰阅读 */
+.glitch-hover:hover { animation: text-glitch 0.3s steps(3, jump-none); }
+@keyframes text-glitch {
+  0% { text-shadow: 0.5px 0 0 rgb(34 211 238 / 0.85), -0.5px 0 0 rgb(244 114 182 / 0.55); }
+  55% { text-shadow: -0.5px 0 0 rgb(34 211 238 / 0.85), 0.5px 0 0 rgb(244 114 182 / 0.55); }
+  100% { text-shadow: none; }
+}
+
+/* `ls` 彩蛋：终端卡片短暂霓虹脉冲 */
+.ls-flash .crt-hover {
+  border-color: rgb(34 211 238 / 0.7);
+  box-shadow: 0 0 0 1px rgb(34 211 238 / 0.4), 0 0 28px -6px rgb(34 211 238 / 0.5);
+}
+
+/* 文章提示框：霓虹终端风 Admonition */
+.admonition {
+  margin: 1.5rem 0;
+  padding: 0.75rem 1rem 0.85rem;
+  border-left: 3px solid var(--ad-border);
+  border-radius: 0 0.5rem 0.5rem 0;
+  background: var(--ad-soft);
+  box-shadow: 0 0 16px -8px var(--ad-border);
+}
+.admonition-label { font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.08em; color: var(--ad-accent); }
+.admonition-body { margin-top: 0.4rem; font-size: 0.925rem; line-height: 1.7; }
+.admonition-error { --ad-border: var(--term-error-border); --ad-accent: var(--term-error); --ad-soft: var(--term-error-soft); }
+.admonition-warning { --ad-border: var(--term-warn-border); --ad-accent: var(--term-warn); --ad-soft: var(--term-warn-soft); }
+.admonition-success { --ad-border: var(--term-pass-border); --ad-accent: var(--term-pass); --ad-soft: var(--term-pass-soft); }
+.admonition-info { --ad-border: var(--term-info-border); --ad-accent: var(--term-info); --ad-soft: var(--term-info-soft); }
+
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   .cursor-blink { animation: none; }
+  .crt-hover:hover::after { animation: none; }   /* 静态扫描线保留，仅去掉闪烁 */
+  .glitch-hover:hover { animation: none; }       /* 毛刺完全关闭 */
 }
