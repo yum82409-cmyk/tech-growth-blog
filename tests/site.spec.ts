@@ -79,6 +79,13 @@ test("theme persists after reload and matches accessible control label", async (
   await expect(page.locator('meta[name="theme-color"]')).toHaveAttribute("content", toggledDark ? "#18181b" : "#fafafa");
 });
 
+test("ls keyboard easter egg appends a status line", async ({ page }) => {
+  await page.goto("/");
+  await page.keyboard.press("l");
+  await page.keyboard.press("s");
+  await expect(page.locator(".ls-output")).toHaveText("$ ls  about  blog  projects  rss.xml  robots.txt");
+});
+
 test("custom 404 responds with 404", async ({ page }) => {
   const response = await page.goto("/definitely-missing/");
   expect(response?.status()).toBe(404);

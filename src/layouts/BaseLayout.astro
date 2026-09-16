@@ -152,14 +152,32 @@ const currentYear = new Date().getFullYear();
           clearTimeout(timer);
           timer = setTimeout(() => { el.style.opacity = "0"; el.style.transform = "translate(-50%,8px)"; }, 2600);
         };
+        const appendLsOutput = () => {
+          document.documentElement.classList.add("ls-flash");
+          setTimeout(() => document.documentElement.classList.remove("ls-flash"), 1800);
+          toast("➜ about/  blog/  projects/  rss.xml");
+          const output = document.createElement("p");
+          output.className = "ls-output";
+          output.setAttribute("role", "status");
+          output.setAttribute("aria-live", "polite");
+          output.textContent = "$ ls  about  blog  projects  rss.xml  robots.txt";
+          document.body.appendChild(output);
+        };
         addEventListener("keydown", (e) => {
           const t = e.target;
           if (t instanceof HTMLElement && (t.isContentEditable || ["INPUT", "TEXTAREA", "SELECT"].includes(t.tagName))) return;
+          if (e.key === "l") {
+            buf = "l";
+            return;
+          }
+          if (e.key === "s" && buf === "l") {
+            appendLsOutput();
+            buf = "";
+            return;
+          }
           if (e.key === "Enter") {
             if (buf === "ls") {
-              document.documentElement.classList.add("ls-flash");
-              setTimeout(() => document.documentElement.classList.remove("ls-flash"), 1800);
-              toast("➜ about/  blog/  projects/  rss.xml");
+              appendLsOutput();
             } else if (buf === "clear") {
               document.documentElement.classList.remove("ls-flash");
               toast("➜ cleared");

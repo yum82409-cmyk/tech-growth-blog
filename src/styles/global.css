@@ -88,6 +88,20 @@
   border-color: rgb(34 211 238 / 0.7);
   box-shadow: 0 0 0 1px rgb(34 211 238 / 0.4), 0 0 28px -6px rgb(34 211 238 / 0.5);
 }
+@keyframes ls-background-flash {
+  from { background-color: rgb(34 211 238 / 0.12); }
+  to { background-color: transparent; }
+}
+html.ls-flash { animation: ls-background-flash 180ms ease-out 1; }
+.ls-output {
+  width: min(100% - 2.5rem, 64rem);
+  margin: 0 auto 1rem;
+  color: var(--color-cyan-700);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  line-height: 1.5;
+}
+.dark .ls-output { color: var(--color-cyan-300); }
 
 /* 文章提示框：霓虹终端风 Admonition */
 .admonition {
@@ -110,4 +124,5 @@
   .cursor-blink { animation: none; }
   .crt-hover:hover::after { animation: none; }   /* 静态扫描线保留，仅去掉闪烁 */
   .glitch-hover:hover { animation: none; }       /* 毛刺完全关闭 */
+  html.ls-flash { animation: none; }
 }
