@@ -20,6 +20,14 @@ const pages = [
 for (const entry of pages) {
   test(`${entry.path} renders, stays inside viewport, and has no serious accessibility violations`, async ({ page }) => {
     const errors: string[] = [];
+    if (entry.path === "/projects/") {
+      await page.route("https://api.liuguangzhong.top/api/projects", (route) =>
+        route.fulfill({
+          contentType: "application/json",
+          body: JSON.stringify({ projects: [], count: 0, generated_at: "2026-09-16T10:00:00Z" }),
+        }),
+      );
+    }
     page.on("console", (message) => {
       if (message.type() !== "error") return;
       const url = message.location()?.url ?? "";
@@ -77,6 +85,30 @@ test("theme persists after reload and matches accessible control label", async (
   await expect.poll(() => page.locator("html").evaluate((element) => element.classList.contains("dark"))).toBe(toggledDark);
   expect(await page.evaluate(() => localStorage.getItem("theme"))).toBe(toggledDark ? "dark" : "light");
   await expect(page.locator('meta[name="theme-color"]')).toHaveAttribute("content", toggledDark ? "#18181b" : "#fafafa");
+});
+
+test("knowledge projects map API states to accessible badges", async ({ page }) => {
+  await page.route("https://api.liuguangzhong.top/api/projects", (route) =>
+    route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({
+        projects: [
+          { name: "embedded_attitude", status: "成品", updated_at: "2026-09-16", todos: [] },
+          { name: "kicad_mcp", status: "半成品-活跃", updated_at: "2026-09-15", todos: [{ done: false, text: "补充硬件验证" }] },
+          { name: "rlc_transient", status: "半成品-搁置", updated_at: "2026-09-14", todos: [] },
+        ],
+        count: 3,
+        generated_at: "2026-09-16T10:00:00Z",
+      }),
+    }),
+  );
+
+  await page.goto("/projects/");
+  await expect(page.getByRole("heading", { level: 2, name: "知识库实时项目" })).toBeVisible();
+  await expect(page.getByText("🟢 成品", { exact: true })).toBeVisible();
+  await expect(page.getByText("🔵 半成品-活跃", { exact: true })).toBeVisible();
+  await expect(page.getByText("🟡 半成品-搁置", { exact: true })).toBeVisible();
+  await expect(page.getByText("$ fetch /api/projects  [200 OK]", { exact: true })).toBeVisible();
 });
 
 test("ls keyboard easter egg appends a status line", async ({ page }) => {

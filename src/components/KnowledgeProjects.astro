@@ -1,0 +1,113 @@
+---
+const endpoint = import.meta.env.PUBLIC_KB_API_URL ?? "https://api.liuguangzhong.top/api/projects";
+---
+
+<section class="mt-14" aria-labelledby="knowledge-projects-title" data-kb-projects data-endpoint={endpoint}>
+  <div class="flex flex-wrap items-end justify-between gap-4">
+    <div>
+      <p class="font-mono text-xs uppercase tracking-[0.2em] text-cyan-700 dark:text-cyan-300">Live Knowledge Base</p>
+      <h2 id="knowledge-projects-title" class="mt-3 text-2xl font-semibold tracking-tight text-zinc-950 dark:text-zinc-50">知识库实时项目</h2>
+      <p class="mt-3 max-w-2xl leading-7 text-zinc-600 dark:text-zinc-400">数据由本地知识库解析服务经 Cloudflare Tunnel 只读同步。</p>
+    </div>
+    <p class="font-mono text-xs text-zinc-500" data-kb-count></p>
+  </div>
+
+  <p class="mt-6 rounded-lg border border-zinc-200 bg-white px-4 py-3 font-mono text-sm text-zinc-600 dark:border-zinc-800 dark:bg-zinc-950/30 dark:text-zinc-400" aria-live="polite" data-kb-status>
+    $ fetch /api/projects …
+  </p>
+  <div class="mt-6 grid gap-5 md:grid-cols-2" data-kb-grid></div>
+
+  <noscript>
+    <p class="mt-6 text-sm text-term-warn">需要启用 JavaScript 才能加载实时项目状态。</p>
+  </noscript>
+</section>
+
+<script>
+  type Project = {
+    name: string;
+    status: string;
+    updated_at?: string;
+    summary?: string;
+    usability?: string;
+    tech?: string[];
+    todos?: Array<{ done: boolean; text: string }>;
+  };
+
+  type ProjectsResponse = { projects: Project[]; count: number; generated_at: string };
+
+  const statusStyles: Record<string, { icon: string; className: string }> = {
+    成品: { icon: "🟢", className: "text-term-pass" },
+    "半成品-活跃": { icon: "🔵", className: "text-term-info" },
+    "半成品-搁置": { icon: "🟡", className: "text-term-warn" },
+    未填写: { icon: "⚪", className: "text-zinc-500 dark:text-zinc-400" },
+  };
+
+  const text = (tag: string, value: string, className?: string) => {
+    const element = document.createElement(tag);
+    element.textContent = value;
+    if (className) element.className = className;
+    return element;
+  };
+
+  const renderProjects = (root: HTMLElement, payload: ProjectsResponse) => {
+    const grid = root.querySelector<HTMLElement>("[data-kb-grid]");
+    const count = root.querySelector<HTMLElement>("[data-kb-count]");
+    if (!grid || !count) return;
+
+    count.textContent = `${payload.count} PROJECTS · ${new Date(payload.generated_at).toLocaleString("zh-CN")}`;
+    const fragment = document.createDocumentFragment();
+
+    for (const project of payload.projects) {
+      const card = document.createElement("article");
+      card.className = "crt-hover rounded-xl border border-zinc-200 bg-white p-5 dark:border-zinc-800 dark:bg-zinc-950/30";
+
+      const heading = document.createElement("div");
+      heading.className = "flex flex-wrap items-start justify-between gap-3";
+      heading.append(text("h3", project.name, "font-mono text-base font-semibold text-zinc-950 dark:text-zinc-50"));
+
+      const style = statusStyles[project.status] ?? statusStyles["未填写"];
+      const badge = text("span", `${style.icon} ${project.status || "未填写"}`, `rounded-full border border-current/25 px-2.5 py-1 font-mono text-xs ${style.className}`);
+      heading.append(badge);
+      card.append(heading);
+
+      const description = project.summary || project.usability;
+      if (description) card.append(text("p", description, "mt-4 text-sm leading-6 text-zinc-600 dark:text-zinc-400"));
+
+      if (project.todos?.length) {
+        const list = document.createElement("ul");
+        list.className = "mt-4 space-y-2 border-l-2 border-zinc-200 pl-4 text-sm text-zinc-600 dark:border-zinc-800 dark:text-zinc-400";
+        for (const todo of project.todos.filter((item) => !item.done).slice(0, 3)) {
+          list.append(text("li", `TODO  ${todo.text}`, "font-mono leading-6"));
+        }
+        card.append(list);
+      }
+
+      const meta = [project.updated_at && `UPDATED ${project.updated_at}`, project.tech?.slice(0, 3).join(" · ")].filter(Boolean).join("  /  ");
+      if (meta) card.append(text("p", meta, "mt-5 font-mono text-[0.7rem] uppercase tracking-wide text-zinc-500"));
+      fragment.append(card);
+    }
+
+    grid.replaceChildren(fragment);
+  };
+
+  for (const root of document.querySelectorAll<HTMLElement>("[data-kb-projects]")) {
+    const status = root.querySelector<HTMLElement>("[data-kb-status]");
+    const endpoint = root.dataset.endpoint;
+    if (!status || !endpoint) continue;
+
+    fetch(endpoint, { headers: { Accept: "application/json" }, cache: "no-store" })
+      .then(async (response) => {
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        return response.json() as Promise<ProjectsResponse>;
+      })
+      .then((payload) => {
+        renderProjects(root, payload);
+        status.textContent = "$ fetch /api/projects  [200 OK]";
+        status.className = `${status.className} text-term-pass`;
+      })
+      .catch(() => {
+        status.textContent = "$ fetch /api/projects  [暂时离线，请稍后刷新]";
+        status.className = `${status.className} text-term-warn`;
+      });
+  }
+</script>
