@@ -59,6 +59,14 @@ for (const entry of pages) {
   });
 }
 
+test("private workspace entry stays external and does not expose account data", async ({ page }) => {
+  await page.goto("/");
+  const workspaceLink = page.getByRole("link", { name: "打开私有工作台，需登录" });
+  await expect(workspaceLink).toHaveAttribute("href", "https://account.liuguangzhong.top/");
+  await expect(page.getByRole("link", { name: "进入私有工作台" })).toHaveAttribute("href", "https://account.liuguangzhong.top/");
+  await expect(page.locator("main")).not.toContainText("Gmail邮箱");
+});
+
 test("blog list is reverse chronological and only exposes canonical slugs", async ({ page }) => {
   await page.goto("/blog/");
   const links = await page.locator('main article a[href^="/blog/"]').evaluateAll((items) => items.map((item) => item.getAttribute("href")));
